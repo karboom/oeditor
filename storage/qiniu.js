@@ -32,7 +32,9 @@ Qiniu.prototype.list_file = function (prefix, start, count){
             })
         }
 
-        return list
+        return {
+            list, total: 999
+        }
     })
 }
 

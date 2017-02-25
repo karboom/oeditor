@@ -96,13 +96,13 @@ let handles = {
         let start = this.query.start
         let size = this.query.size
 
-        let list = yield storage.list_file(prefix, start, size)
+        let {list,total} = yield storage.list_file(prefix, start, size)
 
         this.body = {
             state: "SUCCESS",
             list,
             start,
-            total: 999
+            total
         }
     }
 }

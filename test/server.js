@@ -10,7 +10,9 @@ var app = koa()
 
 // 静态文件
 app.use(staticCache(__dirname + '/public', {
-    prefix: '/public'
+    prefix: '/public',
+    preload: false,
+    dynamic: true
 }))
 app.use(bodyParser({multipart: true}))
 
@@ -24,9 +26,14 @@ var qiniu = new oeditor.storage.Qiniu({
     secret: env.SECRET
 })
 
+var local = new oeditor.storage.Local({
+    dir: __dirname + '/public/upload',
+    prefix: '/public/upload'
+})
+
 var mid = oeditor.api({
     config: __dirname + '/editor_config.json',
-    storage: qiniu
+    storage: local
 })
 
 router.get('/UE', mid)
