@@ -44,12 +44,19 @@ Qiniu.prototype.get_download_token = function  (key) {
 }
 
 Qiniu.prototype.upload = function (file, key)  {
+    let self = this
+
     let uploadFile = bluebird.promisify(qiniu.io.putFile)
     let putPolicy = new qiniu.rs.PutPolicy(this.bucket + ':' + key)
     let extra = new qiniu.io.PutExtra()
     let token = putPolicy.token(this.mac)
 
-    return uploadFile(token, key, file, extra)
+    return co(function*() {
+
+        let res = yield uploadFile(token, key, file, extra)
+
+        return self.get_download_token(res.key)
+    })
 }
 
 module.exports = Qiniu

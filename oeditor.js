@@ -69,9 +69,9 @@ let file_handle = function*(config, storage) {
     let file_name_tpl = config['PathFormat']
     let file_path = format_path(file_name_tpl, file.name)
 
-    yield storage.upload(file.path, file_path)
+    let url = yield storage.upload(file.path, file_path)
 
-    this.body = make_pic_success_body(file_path, file.name)
+    this.body = make_pic_success_body(url, file.name)
 }
 
 let handles = {
