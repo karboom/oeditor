@@ -64,6 +64,22 @@ let handles = {
         this.body = make_pic_success_body(file_path, file.name)
     },
 
+    imageManager: function*(config, storage) {
+        let prefix = config['imageManagerListPath'] + config['imageManagerUrlPrefix']
+
+        let start = this.query.start
+        let size = this.query.size
+
+        let list = yield storage.list_file(prefix, start, size)
+
+        this.body = {
+            state: "SUCCESS",
+            list,
+            start,
+            total: 999
+        }
+    },
+
     config: function *(config) {
         this.body = config
     }
@@ -90,7 +106,14 @@ module.exports = function (opt) {
         }
 
         if (match) {
-            yield handles[match].call(this, config, storage)
+            try {
+                yield handles[match].call(this, config, storage)
+            } catch (e) {
+                console.log(e)
+                this.body = {
+                    state: e
+                }
+            }
         } else {
             this.body = {
                 state: '请求地址错误'
