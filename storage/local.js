@@ -20,13 +20,23 @@ Local.prototype.list_file = function (prefix, start, count) {
     let getFiles = bluebird.promisify(glob)
     
     return co(function*() {
-        let whole = getFiles({
-            cwd: self.dir + prefix,
+        let whole = yield getFiles('**', {
+            cwd: self.dir + '/' + prefix,
             nodir: true,
             realpath: true
         })
-        
-        console.log(whole)
+
+        let list = []
+        for (let item of  whole.slice(start , start + count)) {
+            let url = self.prefix + item.replace(self.dir, '')
+            list.push({
+                url
+            })
+        }
+
+        return {
+            list, total: whole.lenght
+        }
     })
 }
 
