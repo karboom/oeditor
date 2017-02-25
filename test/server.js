@@ -34,5 +34,8 @@ router.post('/UE', mid)
 app.use(router.routes())
 
 
-app.listen(process.env.RUN_PORT || 3000)
+let port = process.env.RUN_PORT || 3000
+app.listen(port, function () {
+    console.log(`浏览器访问：http://localhost:${port}/public/test.html进行测试`)
+})
 module.exports = app
