@@ -1,7 +1,9 @@
 const bluebird = require('bluebird')
 const moment = require('moment')
 const fs = require('fs')
+const fse = require('fs-extra')
 
+if (!fs.existsSync('/tmp/oeditor')) fs.mkdirSync('/tmp/oeditor')
 
 let upload_check = function *(file, config) {
     let size = config['MaxSize']
@@ -34,8 +36,10 @@ let format_path = function (tpl, file_name) {
     let rand = Math.random().toString().substr(2)
     res = res.replace(/\{rand.*?\}/g, rand)
 
-    file_name = file_name.replace(/(\\|\:|\*|\?|\"|\<|\>|\|)/g, '')
-    res = res.replace(/\{filename\}/g, file_name)
+    if (file_name) {
+        file_name = file_name.replace(/(\\|\:|\*|\?|\"|\<|\>|\|)/g, '')
+        res = res.replace(/\{filename\}/g, file_name)
+    }
 
     return res
 }
@@ -79,7 +83,23 @@ let handles = {
         yield file_handle.apply(this, arguments)
     },
 
-    scrawl: function*() {
+    scrawl: function*(config, storage) {
+        // 检查大小，写入缓存文件，上传/转移，删除缓存文件
+        let base64 = this.request.body.upfile
+
+        if (base64.length > config['MaxSize']) throw '大小超出限制'
+
+        let tmp_path = '/tmp/oeditor/'+ new Date().getTime()
+        fs.writeFileSync(tmp_path, base64, {
+            encoding: 'base64',
+            flags: 'w'
+        })
+
+        let file_path = format_path(config['PathFormat'])
+
+        let url  = yield storage.upload(tmp_path, file_path)
+
+        this.body = make_pic_success_body(url, '')
     },
 
     video: function*() {
