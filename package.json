@@ -1,6 +1,6 @@
 {
   "name": "oeditor",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "ueditor的nodejs + koa 后端实现，目前支持七牛云和本地文件系统两种存储方式",
   "keywords": ["qiniu", "koa", "ueditor", "七牛"],
   "main": "index.js",
